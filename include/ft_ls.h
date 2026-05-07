@@ -3,9 +3,13 @@
 
 # include <sys/stat.h>
 # include <stdbool.h>
+# include <dirent.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <string.h>
+# include "../libft/libft.h"
+
+# define BUF_SIZE 8192
 
 typedef struct s_opts
 {
@@ -27,7 +31,7 @@ typedef struct s_entry
     char    *path; // full path ("src/foo.c") - needed for recursion + lstat
     struct stat st; // entire lstat result: mode, size, times, uid, gid, nlink...
     char    *link_target; // readlink result, NULL if not a symlink
-    bool    hasxattr; // for the '@' indicator
+    bool    has_xattr; // for the '@' indicator
     bool    has_acl; // for the '+' indicator
 }   t_entry;
 
@@ -61,6 +65,33 @@ typedef struct s_col_widths
     int size;
 }   t_col_widths;
 
+typedef int (*t_cmp_fn)(t_entry *a, t_entry *b);
+
+typedef struct s_classified
+{
+    t_entry *files;
+    int file_count;
+    t_entry *dirs;
+    int dir_count;
+    bool had_errors;
+}   t_classified;
+
+// parse_args.c
 int parse_args(int argc, char **argv, t_opts *opts, char ***targets);
+
+// entry.c
+int entry_create(t_entry *entry, const char *path, const char *name_override);
+void entry_destroy(t_entry *entry);
+void entry_array_destroy(t_entry *entries, int count);
+
+// sort.cconst char
+int cmp_alpha(t_entry *a, t_entry *b);
+int cmp_mtime(t_entry *a, t_entry *b);
+int cmp_atime(t_entry *a, t_entry *b);
+t_cmp_fn get_comparator(t_opts *opts);
+void sort_entries(t_entry *entries, int count, t_cmp_fn cmp, bool reverse);
+
+// classify.c
+int classify_targets(char **targets, int count, t_opts *opts, t_classified *result);
 
 #endif

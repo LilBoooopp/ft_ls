@@ -25,8 +25,16 @@ ARGS_SRC = \
 
 ARGS = $(addprefix $(ARGS_DIR), $(ARGS_SRC))
 
-ALL_SRC = $(SRC) $(ARGS)
-vpath %.c src src/args
+ENTRY_DIR = src/entry/
+ENTRY_SRC = \
+	classify.c \
+	helpers.c \
+	sort.c
+
+ENTRY = $(addprefix $(ENTRY_DIR), $(ENTRY_SRC))
+
+ALL_SRC = $(SRC) $(ARGS) $(ENTRY)
+vpath %.c src src/args src/entry
 #--------------------------------------OBJECTS----------------------------------#
 OBJ_DIR  = Objects/
 OBJECTS  = $(patsubst %.c,$(OBJ_DIR)%.o,$(notdir $(ALL_SRC)))
