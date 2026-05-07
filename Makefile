@@ -25,20 +25,36 @@ ARGS_SRC = \
 
 ARGS = $(addprefix $(ARGS_DIR), $(ARGS_SRC))
 
+CORE_DIR = src/core/
+CORE_SRC = \
+	classify.c \
+	list_directory.c
+
+CORE = $(addprefix $(CORE_DIR), $(CORE_SRC))
+
 ENTRY_DIR = src/entry/
 ENTRY_SRC = \
-	classify.c \
-	display.c \
-	helpers.c \
-	list_directory.c \
-	path_util.c \
+	entry.c \
 	read_dir.c \
 	sort.c
 
 ENTRY = $(addprefix $(ENTRY_DIR), $(ENTRY_SRC))
 
-ALL_SRC = $(SRC) $(ARGS) $(ENTRY)
-vpath %.c src src/args src/entry
+OUTPUT_DIR = src/output/
+OUTPUT_SRC = \
+	buf.c \
+	display.c
+
+OUTPUT = $(addprefix $(OUTPUT_DIR), $(OUTPUT_SRC))
+
+UTILS_DIR = src/utils/
+UTILS_SRC = \
+	path_util.c
+
+UTILS = $(addprefix $(UTILS_DIR), $(UTILS_SRC))
+
+ALL_SRC = $(SRC) $(ARGS) $(CORE) $(ENTRY) $(OUTPUT) $(UTILS)
+vpath %.c src src/args src/core src/entry src/output src/utils
 #--------------------------------------OBJECTS----------------------------------#
 OBJ_DIR  = Objects/
 OBJECTS  = $(patsubst %.c,$(OBJ_DIR)%.o,$(notdir $(ALL_SRC)))

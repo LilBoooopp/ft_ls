@@ -100,10 +100,20 @@ char *path_join(const char *dir, const char *name);
 // read_dir.c
 t_entry *read_directory(const char *path, t_opts *opts, int *count);
 
+// buf.c
+void buf_init(t_buf *buf);
+void buf_flush(t_buf *buf);
+void buf_write(t_buf *buf, const char *src, int len);
+void buf_write_str(t_buf *buf, const char *s);
+void buf_write_char(t_buf *buf, char c);
+void buf_write_uint(t_buf *buf, unsigned long n);
+void buf_write_pad(t_buf *buf, char c, int n);
+int uint_width(unsigned long n);
+
 // display.c
-void    display_entries(t_entry *entries, int count, t_opts *opts);
+void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf);
 
 // list_directory.c
-void    list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator);
+void    list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator, t_buf *buf);
 
 #endif

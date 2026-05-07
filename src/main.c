@@ -25,6 +25,7 @@ int main(int argc, char **argv)
     char    **targets;
     int     count;
     t_classified cl;
+    t_buf buf;
     bool print_header;
     bool separator;
     int i;
@@ -37,20 +38,22 @@ int main(int argc, char **argv)
         free(targets);
         return (1);
     }
+    buf_init(&buf);
     separator = false;
     if (cl.file_count > 0)
     {
-        display_entries(cl.files, cl.file_count, &opts);
+        display_entries(cl.files, cl.file_count, &opts, &buf);
         separator = true;
     }
     print_header = needs_headers(&opts, &cl);
     i = 0;
     while (i < cl.dir_count)
     {
-        list_directory(cl.dirs[i].path, &opts, print_header, separator);
+        list_directory(cl.dirs[i].path, &opts, print_header, separator, &buf);
         separator = true;
         i++;
     }
+    buf_flush(&buf);
     entry_array_destroy(cl.files, cl.file_count);
     entry_array_destroy(cl.dirs, cl.dir_count);
     free(targets);

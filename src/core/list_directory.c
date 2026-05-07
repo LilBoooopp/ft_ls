@@ -32,7 +32,7 @@ static bool is_dot_or_dotdot(const char *name)
 * @brief Recurse into all subdirectories of the just-listed directory.
 * Skip symlinks-to-directories (real ls doesn't recurse into them with -R).
 */
-static void recurse_into_subdirs(t_entry *entries, int count, t_opts *opts)
+static void recurse_into_subdirs(t_entry *entries, int count, t_opts *opts, t_buf *buf)
 {
     int i;
 
@@ -40,7 +40,7 @@ static void recurse_into_subdirs(t_entry *entries, int count, t_opts *opts)
     while (i < count)
     {
         if (S_ISDIR(entries[i].st.st_mode) && !is_dot_or_dotdot(entries[i].name))
-            list_directory(entries[i].path, opts, true, true);
+            list_directory(entries[i].path, opts, true, true, buf);
         i++;
     }
 }
@@ -50,7 +50,7 @@ static void recurse_into_subdirs(t_entry *entries, int count, t_opts *opts)
 *   print_header - true means print "path:" line (mutiple targets, or -R)
 *   print_separator - true means print blank line before this section
 */
-void list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator)
+void list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator, t_buf *buf)
 {
     t_entry *entries;
     int count;
@@ -59,20 +59,21 @@ void list_directory(const char *path, t_opts *opts, bool print_header, bool prin
     entries = read_directory(path, opts, &count);
     if (!entries)
     {
+        buf_flush(buf);
         print_open_error(path);
         return ;
     }
     if (print_separator)
-        ft_putstr_fd("\n", 1);
+        buf_write_char(buf, '\n');
     if (print_header)
     {
-        ft_putstr_fd((char *)path, 1);
-        ft_putstr_fd(":\n", 1);
+        buf_write_str(buf, path);
+        buf_write_str(buf, ":\n");
     }
     cmp = get_comparator(opts);
     sort_entries(entries, count, cmp, opts->r);
-    display_entries(entries, count, opts);
+    display_entries(entries, count, opts, buf);
     if (opts->cap_r)
-        recurse_into_subdirs(entries, count, opts);
+        recurse_into_subdirs(entries, count, opts, buf);
     entry_array_destroy(entries, count);
 }
