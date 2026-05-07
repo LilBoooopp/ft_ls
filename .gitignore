@@ -18,3 +18,5 @@ objs/
 .idea/
 
 vgcore*
+
+ft_ls
