@@ -28,7 +28,11 @@ ARGS = $(addprefix $(ARGS_DIR), $(ARGS_SRC))
 ENTRY_DIR = src/entry/
 ENTRY_SRC = \
 	classify.c \
+	display.c \
 	helpers.c \
+	list_directory.c \
+	path_util.c \
+	read_dir.c \
 	sort.c
 
 ENTRY = $(addprefix $(ENTRY_DIR), $(ENTRY_SRC))

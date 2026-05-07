@@ -94,4 +94,16 @@ void sort_entries(t_entry *entries, int count, t_cmp_fn cmp, bool reverse);
 // classify.c
 int classify_targets(char **targets, int count, t_opts *opts, t_classified *result);
 
+// path_util.c
+char *path_join(const char *dir, const char *name);
+
+// read_dir.c
+t_entry *read_directory(const char *path, t_opts *opts, int *count);
+
+// display.c
+void    display_entries(t_entry *entries, int count, t_opts *opts);
+
+// list_directory.c
+void    list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator);
+
 #endif

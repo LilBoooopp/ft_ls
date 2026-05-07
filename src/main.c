@@ -1,28 +1,22 @@
 #include "../libft/libft.h"
 #include "../include/ft_ls.h"
 
-static void debug_classified(t_classified *cl)
+/**
+* @brief Decide whether each directory needs a "path:" header.
+* Headers are needed when:
+*     - We're recursing (-R), OR
+*     - More than one "section" is being printed (multiple dirs, or files+dirs)
+*/
+static bool needs_headers(t_opts *opts, t_classified *cl)
 {
-    int i;
+    int sections;
 
-    ft_putstr_fd("--- Files ---\n", 1);
-    i = 0;
-    while (i < cl->file_count)
-    {
-        ft_putstr_fd("  ", 1);
-        ft_putstr_fd(cl->files[i].path, 1);
-        ft_putstr_fd("\n", 1);
-        i++;
-    }
-    ft_putstr_fd("--- Directories ---\n", 1);
-    i = 0;
-    while (i < cl->dir_count)
-    {
-        ft_putstr_fd("  ", 1);
-        ft_putstr_fd(cl->dirs[i].path, 1);
-        ft_putstr_fd("\n", 1);
-        i++;
-    }
+    if (opts->cap_r)
+        return (true);
+    sections = cl->dir_count;
+    if (cl->file_count > 0)
+        sections++;
+    return (sections > 1);
 }
 
 int main(int argc, char **argv)
@@ -31,6 +25,9 @@ int main(int argc, char **argv)
     char    **targets;
     int     count;
     t_classified cl;
+    bool print_header;
+    bool separator;
+    int i;
 
     count = parse_args(argc, argv, &opts, &targets);
     if (count == -1)
@@ -40,7 +37,20 @@ int main(int argc, char **argv)
         free(targets);
         return (1);
     }
-    debug_classified(&cl);
+    separator = false;
+    if (cl.file_count > 0)
+    {
+        display_entries(cl.files, cl.file_count, &opts);
+        separator = true;
+    }
+    print_header = needs_headers(&opts, &cl);
+    i = 0;
+    while (i < cl.dir_count)
+    {
+        list_directory(cl.dirs[i].path, &opts, print_header, separator);
+        separator = true;
+        i++;
+    }
     entry_array_destroy(cl.files, cl.file_count);
     entry_array_destroy(cl.dirs, cl.dir_count);
     free(targets);
