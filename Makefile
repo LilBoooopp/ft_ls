@@ -1,5 +1,5 @@
 #───────────────────────────  PROJECT BASICS  ────────────────────────────────#
-NAME = template
+NAME = ft_ls
 CC   = cc
 INC = include
 RM   = rm -rf
@@ -14,12 +14,13 @@ PRINTF    = $(addprefix $(PRINTF_DIR), $(PRINTF_A))
 
 #--------------------------------------SOURCES---------------------------------#
 SRC_DIR = src/
-SRC_SRC =  \
+SRC_SRC = \
 	main.c
+
 SRC = $(addprefix $(SRC_DIR), $(SRC_SRC))
 
-ALL_SRC = $(SRC) 
-vpath %.c src 
+ALL_SRC = $(SRC)
+vpath %.c src
 #--------------------------------------OBJECTS----------------------------------#
 OBJ_DIR  = Objects/
 OBJECTS  = $(patsubst %.c,$(OBJ_DIR)%.o,$(notdir $(ALL_SRC)))
@@ -44,7 +45,6 @@ BOLD='\033[1m'
 
 #────────────────────────────────  RULES  ─────────────────────────────────────#
 all: reset_counter $(OBJ_DIR) $(LIBFT) $(NAME)
-	@git submodule update --init --recursive
 
 reset_counter:
 	@rm -f .counter
@@ -55,6 +55,7 @@ $(OBJ_DIR):
 	@printf $(BOLD)$(MAGENTA)"Objects directory created\n"$(NONE)
 
 $(LIBFT):
+	@git submodule update --init --recursive
 	@printf $(CURSIVE)$(GRAY)"🔧 Making libft...\n"$(NONE)
 	@$(MAKE) -C $(LIBFT_DIR)
 
