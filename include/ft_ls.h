@@ -1,15 +1,17 @@
 #ifndef FT_LS_H
-#define FT_LS_H
+# define FT_LS_H
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <stdio.h>
+# include <sys/stat.h>
+# include <stdbool.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <string.h>
 
 typedef struct s_opts
 {
     bool    l; // long format
-    bool    R; // recursive
-    bool    a; //  show hidden
+    bool    cap_r;
+    bool    a;
     bool    r; //  reverse sort
     bool    t; //  sort by time
     bool    u; //  sort/show access time
@@ -50,5 +52,15 @@ typedef struct s_buf
     char    data[8192]; // flush once per 8kb
     int     len;
 }   t_buf;
+
+typedef struct s_col_widths
+{
+    int nlink;
+    int user;
+    int group;
+    int size;
+}   t_col_widths;
+
+int parse_args(int argc, char **argv, t_opts *opts, char ***targets);
 
 #endif

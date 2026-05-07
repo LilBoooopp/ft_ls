@@ -19,8 +19,14 @@ SRC_SRC = \
 
 SRC = $(addprefix $(SRC_DIR), $(SRC_SRC))
 
-ALL_SRC = $(SRC)
-vpath %.c src
+ARGS_DIR = src/args/
+ARGS_SRC = \
+	args.c
+
+ARGS = $(addprefix $(ARGS_DIR), $(ARGS_SRC))
+
+ALL_SRC = $(SRC) $(ARGS)
+vpath %.c src src/args
 #--------------------------------------OBJECTS----------------------------------#
 OBJ_DIR  = Objects/
 OBJECTS  = $(patsubst %.c,$(OBJ_DIR)%.o,$(notdir $(ALL_SRC)))
