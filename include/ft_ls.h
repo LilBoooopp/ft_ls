@@ -27,12 +27,12 @@ typedef struct s_opts
 
 typedef struct s_entry
 {
-    char    *name; // filename only ("foo.c")
-    char    *path; // full path ("src/foo.c") - needed for recursion + lstat
+    char        *name; // filename only ("foo.c")
+    char        *path; // full path ("src/foo.c") - needed for recursion + lstat
     struct stat st; // entire lstat result: mode, size, times, uid, gid, nlink...
-    char    *link_target; // readlink result, NULL if not a symlink
-    bool    has_xattr; // for the '@' indicator
-    bool    has_acl; // for the '+' indicator
+    char        *link_target; // readlink result, NULL if not a symlink
+    bool        has_xattr; // for the '@' indicator
+    bool        has_acl; // for the '+' indicator
 }   t_entry;
 
 typedef struct s_cache_entry
@@ -70,10 +70,10 @@ typedef int (*t_cmp_fn)(t_entry *a, t_entry *b);
 typedef struct s_classified
 {
     t_entry *files;
-    int file_count;
+    int     file_count;
     t_entry *dirs;
-    int dir_count;
-    bool had_errors;
+    int     dir_count;
+    bool    had_errors;
 }   t_classified;
 
 // parse_args.c
@@ -85,35 +85,41 @@ void entry_destroy(t_entry *entry);
 void entry_array_destroy(t_entry *entries, int count);
 
 // sort.cconst char
-int cmp_alpha(t_entry *a, t_entry *b);
-int cmp_mtime(t_entry *a, t_entry *b);
-int cmp_atime(t_entry *a, t_entry *b);
-t_cmp_fn get_comparator(t_opts *opts);
-void sort_entries(t_entry *entries, int count, t_cmp_fn cmp, bool reverse);
-
-// classify.c
-int classify_targets(char **targets, int count, t_opts *opts, t_classified *result);
-
-// path_util.c
-char *path_join(const char *dir, const char *name);
+int         cmp_alpha(t_entry *a, t_entry *b);
+int         cmp_mtime(t_entry *a, t_entry *b);
+int         cmp_atime(t_entry *a, t_entry *b);
+t_cmp_fn    get_comparator(t_opts *opts);
+void        sort_entries(t_entry *entries, int count, t_cmp_fn cmp, bool reverse);
 
 // read_dir.c
-t_entry *read_directory(const char *path, t_opts *opts, int *count);
+t_entry     *read_directory(const char *path, t_opts *opts, int *count);
 
-// buf.c
-void buf_init(t_buf *buf);
-void buf_flush(t_buf *buf);
-void buf_write(t_buf *buf, const char *src, int len);
-void buf_write_str(t_buf *buf, const char *s);
-void buf_write_char(t_buf *buf, char c);
-void buf_write_uint(t_buf *buf, unsigned long n);
-void buf_write_pad(t_buf *buf, char c, int n);
-int uint_width(unsigned long n);
-
-// display.c
-void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf);
+// cache.c
+void        cache_init(t_cache *cache);
+void        cache_destroy(t_cache *cache);;
+const char  *cache_get_user(t_cache *cache, uid_t uid);
+const char  *cache_get_group(t_cache *cache, gid_t gid);
 
 // list_directory.c
-void    list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator, t_buf *buf);
+void    list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator, t_buf *buf, t_cache *cache);
+
+// classify.c
+int     classify_targets(char **targets, int count, t_opts *opts, t_classified *result);
+
+// path_util.c
+char    *path_join(const char *dir, const char *name);
+
+// buf.c
+void    buf_init(t_buf *buf);
+void    buf_flush(t_buf *buf);
+void    buf_write(t_buf *buf, const char *src, int len);
+void    buf_write_str(t_buf *buf, const char *s);
+void    buf_write_char(t_buf *buf, char c);
+void    buf_write_uint(t_buf *buf, unsigned long n);
+void    buf_write_pad(t_buf *buf, char c, int n);
+int     uint_width(unsigned long n);
+
+// display.c
+void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf, t_cache *cache);
 
 #endif

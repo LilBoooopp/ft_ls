@@ -21,14 +21,15 @@ static bool needs_headers(t_opts *opts, t_classified *cl)
 
 int main(int argc, char **argv)
 {
-    t_opts  opts;
-    char    **targets;
-    int     count;
-    t_classified cl;
-    t_buf buf;
-    bool print_header;
-    bool separator;
-    int i;
+    t_opts          opts;
+    char            **targets;
+    int             count;
+    t_classified    cl;
+    t_buf           buf;
+    t_cache cache; 
+    bool            print_header;
+    bool            separator;
+    int             i;
 
     count = parse_args(argc, argv, &opts, &targets);
     if (count == -1)
@@ -39,21 +40,23 @@ int main(int argc, char **argv)
         return (1);
     }
     buf_init(&buf);
+    cache_init(&cache);
     separator = false;
     if (cl.file_count > 0)
     {
-        display_entries(cl.files, cl.file_count, &opts, &buf);
+        display_entries(cl.files, cl.file_count, &opts, &buf, &cache);
         separator = true;
     }
     print_header = needs_headers(&opts, &cl);
     i = 0;
     while (i < cl.dir_count)
     {
-        list_directory(cl.dirs[i].path, &opts, print_header, separator, &buf);
+        list_directory(cl.dirs[i].path, &opts, print_header, separator, &buf, &cache);
         separator = true;
         i++;
     }
     buf_flush(&buf);
+    cache_destroy(&cache);
     entry_array_destroy(cl.files, cl.file_count);
     entry_array_destroy(cl.dirs, cl.dir_count);
     free(targets);
