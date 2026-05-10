@@ -65,6 +65,7 @@ typedef struct s_col_widths
     int size;
     int major;
     int minor;
+    bool any_acl;
 }   t_col_widths;
 
 typedef int (*t_cmp_fn)(t_entry *a, t_entry *b);
@@ -104,6 +105,9 @@ const char  *cache_get_group(t_cache *cache, gid_t gid);
 
 // list_directory.c
 void    list_directory(const char *path, t_opts *opts, bool print_header, bool print_separator, t_buf *buf, t_cache *cache);
+
+// xattr.c
+void entry_load_acl_info(t_entry *entry);
 
 // classify.c
 int     classify_targets(char **targets, int count, t_opts *opts, t_classified *result);

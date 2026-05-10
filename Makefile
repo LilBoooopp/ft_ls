@@ -37,7 +37,8 @@ ENTRY_SRC = \
 	cache.c \
 	entry.c \
 	read_dir.c \
-	sort.c
+	sort.c \
+	xattr.c
 
 ENTRY = $(addprefix $(ENTRY_DIR), $(ENTRY_SRC))
 

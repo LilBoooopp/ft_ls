@@ -43,6 +43,9 @@ static void compute_widths(t_entry *entries, int count, t_cache *cache, t_col_wi
     i = 0;
     while (i < count)
     {
+        entry_load_acl_info(&entries[i]);
+        if (entries[i].has_acl)
+            w->any_acl = true;
         cur = uint_width(entries[i].st.st_nlink);
         if (cur > w->nlink)
             w->nlink = cur;
@@ -116,6 +119,10 @@ static void write_long_line(t_entry *entry, t_opts *opts, t_cache *cache, t_col_
 
     format_perms(entry->st.st_mode, perms);
     buf_write(buf, perms, 10);
+    if (entry->has_acl)
+        buf_write_char(buf, '+');
+    else if (w->any_acl)
+        buf_write_char(buf, ' ');
     buf_write_char(buf, ' ');
     buf_write_pad(buf, ' ', w->nlink - uint_width(entry->st.st_nlink));
     buf_write_uint(buf, entry->st.st_nlink);
