@@ -46,6 +46,7 @@ OUTPUT_SRC = \
 	buf.c \
 	color.c \
 	display.c \
+	format_columns.c \
 	format_long.c \
 	format_perms.c \
 	format_time.c
@@ -54,7 +55,8 @@ OUTPUT = $(addprefix $(OUTPUT_DIR), $(OUTPUT_SRC))
 
 UTILS_DIR = src/utils/
 UTILS_SRC = \
-	path_util.c
+	path_util.c \
+	term.c
 
 UTILS = $(addprefix $(UTILS_DIR), $(UTILS_SRC))
 

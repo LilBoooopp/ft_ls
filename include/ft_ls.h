@@ -111,6 +111,9 @@ int     classify_targets(char **targets, int count, t_opts *opts, t_classified *
 // path_util.c
 char    *path_join(const char *dir, const char *name);
 
+// term.c
+int get_terminal_width(void);
+
 // buf.c
 void    buf_init(t_buf *buf);
 void    buf_flush(t_buf *buf);
@@ -129,6 +132,9 @@ void format_time(struct stat *st, t_opts *opts, t_buf *buf);
 
 // format_long.c
 void format_long_listing(t_entry *entries, int count, t_opts *opts, t_cache *cache, t_buf *buf, bool print_total);
+
+// format_columns.c
+void format_columns_listing(t_entry *entries, int count, t_opts *opts, t_buf *buf);
 
 // color.c
 const char *color_for_entry(t_entry *entry);
