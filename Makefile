@@ -44,6 +44,7 @@ ENTRY = $(addprefix $(ENTRY_DIR), $(ENTRY_SRC))
 OUTPUT_DIR = src/output/
 OUTPUT_SRC = \
 	buf.c \
+	color.c \
 	display.c \
 	format_long.c \
 	format_perms.c \

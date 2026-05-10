@@ -134,7 +134,7 @@ static void write_long_line(t_entry *entry, t_opts *opts, t_cache *cache, t_col_
     buf_write_char(buf, ' ');
     format_time(&entry->st, opts, buf);
     buf_write_char(buf, ' ');
-    buf_write_str(buf, entry->name);
+    write_colored_name(buf, entry, opts);
     if (S_ISLNK(entry->st.st_mode) && entry->link_target)
     {
         buf_write_str(buf, " -> ");

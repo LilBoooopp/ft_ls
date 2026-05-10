@@ -7,11 +7,14 @@ void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf, t
     if (opts->l || opts->g)
     {
         format_long_listing(entries, count, opts, cache, buf, show_total);
+        return ;
     }
+    (void)cache;
+    (void)show_total;
     i = 0;
     while (i < count)
     {
-        buf_write_str(buf, entries[i].name);
+        write_colored_name(buf, &entries[i], opts);
         buf_write_char(buf, '\n');
         i++;
     }

@@ -130,6 +130,10 @@ void format_time(struct stat *st, t_opts *opts, t_buf *buf);
 // format_long.c
 void format_long_listing(t_entry *entries, int count, t_opts *opts, t_cache *cache, t_buf *buf, bool print_total);
 
+// color.c
+const char *color_for_entry(t_entry *entry);
+void write_colored_name(t_buf *buf, t_entry *entry, t_opts *opts);
+
 // display.c
 void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf, t_cache *cache, bool show_total);
 
