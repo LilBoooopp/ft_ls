@@ -72,7 +72,7 @@ void list_directory(const char *path, t_opts *opts, bool print_header, bool prin
     }
     cmp = get_comparator(opts);
     sort_entries(entries, count, cmp, opts->r);
-    display_entries(entries, count, opts, buf, cache);
+    display_entries(entries, count, opts, buf, cache, true);
     if (opts->cap_r)
         recurse_into_subdirs(entries, count, opts, buf, cache);
     entry_array_destroy(entries, count);

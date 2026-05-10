@@ -53,7 +53,7 @@ typedef struct s_cache
 
 typedef struct s_buf
 {
-    char    data[8192]; // flush once per 8kb
+    char    data[BUF_SIZE]; // flush once per 8kb
     int     len;
 }   t_buf;
 
@@ -63,6 +63,8 @@ typedef struct s_col_widths
     int user;
     int group;
     int size;
+    int major;
+    int minor;
 }   t_col_widths;
 
 typedef int (*t_cmp_fn)(t_entry *a, t_entry *b);
@@ -119,7 +121,16 @@ void    buf_write_uint(t_buf *buf, unsigned long n);
 void    buf_write_pad(t_buf *buf, char c, int n);
 int     uint_width(unsigned long n);
 
+// format_perms.c
+void    format_perms(mode_t mode, char *out);
+
+// format_time.c
+void format_time(struct stat *st, t_opts *opts, t_buf *buf);
+
+// format_long.c
+void format_long_listing(t_entry *entries, int count, t_opts *opts, t_cache *cache, t_buf *buf, bool print_total);
+
 // display.c
-void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf, t_cache *cache);
+void    display_entries(t_entry *entries, int count, t_opts *opts, t_buf *buf, t_cache *cache, bool show_total);
 
 #endif

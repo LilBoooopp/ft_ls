@@ -34,6 +34,7 @@ CORE = $(addprefix $(CORE_DIR), $(CORE_SRC))
 
 ENTRY_DIR = src/entry/
 ENTRY_SRC = \
+	cache.c \
 	entry.c \
 	read_dir.c \
 	sort.c
@@ -43,7 +44,10 @@ ENTRY = $(addprefix $(ENTRY_DIR), $(ENTRY_SRC))
 OUTPUT_DIR = src/output/
 OUTPUT_SRC = \
 	buf.c \
-	display.c
+	display.c \
+	format_long.c \
+	format_perms.c \
+	format_time.c
 
 OUTPUT = $(addprefix $(OUTPUT_DIR), $(OUTPUT_SRC))
 

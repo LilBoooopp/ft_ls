@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     int             count;
     t_classified    cl;
     t_buf           buf;
-    t_cache cache; 
+    t_cache         cache; 
     bool            print_header;
     bool            separator;
     int             i;
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     separator = false;
     if (cl.file_count > 0)
     {
-        display_entries(cl.files, cl.file_count, &opts, &buf, &cache);
+        display_entries(cl.files, cl.file_count, &opts, &buf, &cache, false);
         separator = true;
     }
     print_header = needs_headers(&opts, &cl);
