@@ -23,6 +23,7 @@ typedef struct s_opts
     bool    g; //  like -l but no owner
     bool    d; //  list directories themselves, not contents
     bool    h;
+    bool    cap_s;
     bool    color; //  colorized output
 }   t_opts;
 

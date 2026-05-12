@@ -24,6 +24,20 @@ int cmp_atime(t_entry *a, t_entry *b)
 }
 
 /**
+ * @brief Sort by size, largest first (descending). Name is the tiebreaker.
+ *
+ * @param a 
+ * @param b 
+ * @return 
+ */
+int cmp_size(t_entry *a, t_entry *b)
+{
+    if (a->st.st_size != b ->st.st_size)
+        return (a->st.st_size > b->st.st_size ? -1 : 1);
+    return (cmp_alpha(a, b));
+}
+
+/**
     * @brief Get the appropriate comparator based on options.
 * @return NULL if -f (no sorting).
 */
@@ -31,6 +45,8 @@ t_cmp_fn get_comparator(t_opts *opts)
 {
     if (opts->f)
         return (NULL);
+    if (opts->cap_s)
+        return (cmp_size);
     if (opts->t && opts->u)
         return (cmp_atime);
     if (opts->t)
