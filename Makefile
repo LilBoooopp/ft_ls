@@ -48,6 +48,7 @@ OUTPUT_SRC = \
 	color.c \
 	display.c \
 	format_columns.c \
+	format_human.c \
 	format_long.c \
 	format_perms.c \
 	format_time.c

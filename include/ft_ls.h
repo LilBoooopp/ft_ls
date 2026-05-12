@@ -22,6 +22,7 @@ typedef struct s_opts
     bool    f; //  unsorted, implies -a
     bool    g; //  like -l but no owner
     bool    d; //  list directories themselves, not contents
+    bool    h;
     bool    color; //  colorized output
 }   t_opts;
 
@@ -136,6 +137,9 @@ void format_time(struct stat *st, t_opts *opts, t_buf *buf);
 
 // format_long.c
 void format_long_listing(t_entry *entries, int count, t_opts *opts, t_cache *cache, t_buf *buf, bool print_total);
+
+// format_human.c
+int format_human_size(unsigned long long size, char *out);
 
 // format_columns.c
 void format_columns_listing(t_entry *entries, int count, t_opts *opts, t_buf *buf);

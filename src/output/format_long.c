@@ -7,9 +7,10 @@
 * @brief Tracks widths for regular size, major and minor separately.
 * After scanning, the size column needs to fit either the widest regular size or "MAJ, MIN" with right-aligned major and minor - whichever wins.
 */
-static void scan_size(t_entry *entry, t_col_widths *w)
+static void scan_size(t_entry *entry, t_opts *opts, t_col_widths *w)
 {
     int cur;
+    char human[8];
 
     if (S_ISCHR(entry->st.st_mode) || S_ISBLK(entry->st.st_mode))
     {
@@ -22,13 +23,17 @@ static void scan_size(t_entry *entry, t_col_widths *w)
     }
     else
     {
+        if (opts->h)
+            cur = format_human_size(entry->st.st_size, human);
+        else
+            cur = uint_width(entry->st.st_size);
         cur = uint_width(entry->st.st_size);
         if (cur > w->size)
             w->size = cur;
     }
 }
 
-static void compute_widths(t_entry *entries, int count, t_cache *cache, t_col_widths *w)
+static void compute_widths(t_entry *entries, int count, t_opts *opts, t_cache *cache, t_col_widths *w)
 {
     int i;
     int cur;
@@ -40,6 +45,7 @@ static void compute_widths(t_entry *entries, int count, t_cache *cache, t_col_wi
     w->size = 1;
     w->major = 0;
     w->minor = 0;
+    w->any_acl = false;
     i = 0;
     while (i < count)
     {
@@ -55,7 +61,7 @@ static void compute_widths(t_entry *entries, int count, t_cache *cache, t_col_wi
         name = cache_get_group(cache, entries[i].st.st_gid);
         if (name && (cur = ft_strlen(name)) > w->group)
             w->group = cur;
-        scan_size(&entries[i], w);
+        scan_size(&entries[i], opts, w);
         i++;
     }
     if (w->major > 0 || w-> minor > 0)
@@ -66,17 +72,25 @@ static void compute_widths(t_entry *entries, int count, t_cache *cache, t_col_wi
     }
 }
 
-static void write_total_line(t_entry *entries, int count, t_buf *buf)
+static void write_total_line(t_entry *entries, int count, t_opts *opts, t_buf *buf)
 {
-    unsigned long total;
-    int i;
+    unsigned long total_blocks;
+    char          human[8];
+    int           len;
+    int           i;
 
-    total = 0;
+    total_blocks = 0;
     i = 0;
     while (i < count)
-        total += entries[i++].st.st_blocks;
+        total_blocks += entries[i++].st.st_blocks;
     buf_write_str(buf, "total ");
-    buf_write_uint(buf, total / 2);
+    if (opts->h)
+    {
+        len = format_human_size(total_blocks * 512, human);
+        buf_write(buf, human, len);
+    }
+    else
+        buf_write_uint(buf, total_blocks / 2);
     buf_write_char(buf, '\n');
 }
 
@@ -100,15 +114,25 @@ static void write_device_size(t_entry *entry, t_col_widths *w, t_buf *buf)
     buf_write_uint(buf, min);
 }
 
-static void write_size_col(t_entry *entry, t_col_widths *w, t_buf *buf)
+static void write_size_col(t_entry *entry, t_opts *opts, t_col_widths *w, t_buf *buf)
 {
+    char    human[8];
+    int     len;
+
     if (S_ISCHR(entry->st.st_mode) || S_ISBLK(entry->st.st_mode))
-        write_device_size(entry, w, buf);
-    else
     {
-        buf_write_pad(buf, ' ', w->size - uint_width(entry->st.st_size));
-        buf_write_uint(buf, entry->st.st_size);
+        write_device_size(entry, w, buf);
+        return ;
     }
+    if (opts->h)
+    {
+        len = format_human_size(entry->st.st_size, human);
+        buf_write_pad(buf, ' ', w->size - len);
+        buf_write(buf, human, len);
+        return ;
+    }
+    buf_write_pad(buf, ' ', w->size - uint_width(entry->st.st_size));
+    buf_write_uint(buf, entry->st.st_size);
 }
 
 static void write_long_line(t_entry *entry, t_opts *opts, t_cache *cache, t_col_widths *w, t_buf *buf)
@@ -137,7 +161,7 @@ static void write_long_line(t_entry *entry, t_opts *opts, t_cache *cache, t_col_
     if (name)
         buf_write_str(buf, name);
     buf_write_pad(buf, ' ', w->group - len + 1);
-    write_size_col(entry, w, buf);
+    write_size_col(entry, opts, w, buf);
     buf_write_char(buf, ' ');
     format_time(&entry->st, opts, buf);
     buf_write_char(buf, ' ');
@@ -155,9 +179,9 @@ void format_long_listing(t_entry *entries, int count, t_opts *opts, t_cache *cac
     t_col_widths w;
     int i;
 
-    compute_widths(entries, count, cache, &w);
+    compute_widths(entries, count, opts, cache, &w);
     if (print_total)
-        write_total_line(entries, count, buf);
+        write_total_line(entries, count, opts, buf);
     i = 0;
     while (i < count)
     {
