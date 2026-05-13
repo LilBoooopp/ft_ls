@@ -47,7 +47,6 @@ static int compute_layout(int *name_widths, int count, int rows, int cols, int *
  * @param term_width 
  * @param col_widths_out 
  * @param cols_out 
- * @return 
  */
 static int find_best_rows(int *name_widths, int count, int term_width, int *col_widths_out, int *cols_out)
 {
@@ -89,7 +88,32 @@ static int *compute_name_widths(t_entry *entries, int count)
     return (widths);
 }
 
-static void print_grid(t_entry *entries, int count, int rows, int cols, int *col_widths, int *name_widths, t_opts *opts, t_buf *buf)
+static int compute_inode_width(t_entry *entries, int count)
+{
+    int w;
+    int cur;
+    int i;
+
+    w = 0;
+    i = 0;
+    while (i < count)
+    {
+        cur = uint_width(entries[i].st.st_ino);
+        if (cur > w)
+            w = cur;
+        i++;
+    }
+    return (w);
+}
+
+static void write_inode_prefix(t_entry *entry, int inode_width, t_buf *buf)
+{
+    buf_write_pad(buf, ' ', inode_width - uint_width(entry->st.st_ino));
+    buf_write_uint(buf, entry->st.st_ino);
+    buf_write_char(buf, ' ');
+}
+
+static void print_grid(t_entry *entries, int count, int rows, int cols, int *col_widths, int *name_widths, int inode_width, t_opts *opts, t_buf *buf)
 {
     int r;
     int c;
@@ -104,6 +128,8 @@ static void print_grid(t_entry *entries, int count, int rows, int cols, int *col
             idx = c * rows + r;
             if (idx >= count)
                 break ;
+            if (opts->i)
+                write_inode_prefix(&entries[idx], inode_width, buf);
             write_colored_name(buf, &entries[idx], opts);
             if (c + 1 < cols && (c + 1) * rows + r < count)
                 buf_write_pad(buf, ' ', col_widths[c] - name_widths[idx] + 2);
@@ -122,13 +148,15 @@ static void print_grid(t_entry *entries, int count, int rows, int cols, int *col
  * @param opts 
  * @param buf 
  */
-static void print_single_column(t_entry *entries, int count, t_opts *opts, t_buf *buf)
+static void print_single_column(t_entry *entries, int count, int inode_width, t_opts *opts, t_buf *buf)
 {
     int i;
 
     i = 0;
     while (i < count)
     {
+        if (opts->i)
+            write_inode_prefix(&entries[i], inode_width, buf);
         write_colored_name(buf, &entries[i], opts);
         buf_write_char(buf, '\n');
         i++;
@@ -142,13 +170,18 @@ void format_columns_listing(t_entry *entries, int count, t_opts *opts, t_buf *bu
     int *col_widths;
     int rows;
     int cols;
+    int inode_width;
+    int i;
 
     if (count == 0)
         return ;
+    inode_width = 0;
+    if (opts->i)
+        inode_width = compute_inode_width(entries, count);
     term_width = get_terminal_width();
     if (term_width == 0)
     {
-        print_single_column(entries, count, opts, buf);
+        print_single_column(entries, count, inode_width, opts, buf);
         return ;
     }
     name_widths = compute_name_widths(entries, count);
@@ -157,11 +190,17 @@ void format_columns_listing(t_entry *entries, int count, t_opts *opts, t_buf *bu
     {
         free(name_widths);
         free(col_widths);
-        print_single_column(entries, count, opts, buf);
+        print_single_column(entries, count, inode_width, opts, buf);
         return ;
     }
+    if (opts->i)
+    {
+        i = 0;
+        while (i < count)
+            name_widths[i++] += inode_width + 1;
+    }
     rows = find_best_rows(name_widths, count, term_width, col_widths, &cols);
-    print_grid(entries, count, rows, cols, col_widths, name_widths, opts, buf);
+    print_grid(entries, count, rows, cols, col_widths, name_widths, inode_width, opts, buf);
     free(name_widths);
     free(col_widths);
 }

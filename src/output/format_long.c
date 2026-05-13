@@ -45,6 +45,7 @@ static void compute_widths(t_entry *entries, int count, t_opts *opts, t_cache *c
     w->size = 1;
     w->major = 0;
     w->minor = 0;
+    w->inode = 0;
     w->any_acl = false;
     i = 0;
     while (i < count)
@@ -52,6 +53,12 @@ static void compute_widths(t_entry *entries, int count, t_opts *opts, t_cache *c
         entry_load_acl_info(&entries[i]);
         if (entries[i].has_acl)
             w->any_acl = true;
+        if (opts->i)
+        {
+            cur = uint_width(entries[i].st.st_ino);
+            if (cur > w->inode)
+                w->inode = cur;
+        }
         cur = uint_width(entries[i].st.st_nlink);
         if (cur > w->nlink)
             w->nlink = cur;
@@ -101,7 +108,7 @@ static void write_device_size(t_entry *entry, t_col_widths *w, t_buf *buf)
 {
     unsigned int maj;
     unsigned int min;
-    int dev_total;
+    int          dev_total;
 
     maj = major(entry->st.st_rdev);
     min = minor(entry->st.st_rdev);
@@ -137,11 +144,17 @@ static void write_size_col(t_entry *entry, t_opts *opts, t_col_widths *w, t_buf 
 
 static void write_long_line(t_entry *entry, t_opts *opts, t_cache *cache, t_col_widths *w, t_buf *buf)
 {
-    char perms[10];
-    const char *name;
-    int len;
+    char        perms[10];
+    const char  *name;
+    int         len;
 
     format_perms(entry->st.st_mode, perms);
+    if (opts->i)
+    {
+        buf_write_pad(buf, ' ', w->inode - uint_width(entry->st.st_ino));
+        buf_write_uint(buf, entry->st.st_ino);
+        buf_write_char(buf, ' ');
+    }
     buf_write(buf, perms, 10);
     if (entry->has_acl)
         buf_write_char(buf, '+');
