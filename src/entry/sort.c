@@ -38,6 +38,43 @@ int cmp_size(t_entry *a, t_entry *b)
 }
 
 /**
+ * @brief Find the extension of a filename for -X sorting purposes.
+ *
+ * GNU ls uses strchr semantics: include the leading dot and consider the ENTRIE leading-dot filename as its "extension":
+ *
+ * @param name 
+ */
+static const char *get_extension(const char *name)
+{
+    int i;
+
+    i = ft_strlen(name) - 1;
+    while (i >= 0)
+    {
+        if (name[i] == '.')
+            return (&name[i]);
+        i--;
+    }
+    return ("");
+}
+
+/**
+ * @brief Sort by extension. Files with no extension came first ("" sorts before any non-empty string). Nmae is the tiebreaker.
+ *
+ * @param a 
+ * @param b 
+ */
+int cmp_extension(t_entry *a, t_entry *b)
+{
+    int r;
+
+    r = ft_strcmp(get_extension(a->name), get_extension(b->name));
+    if (r != 0)
+        return (r);
+    return (cmp_alpha(a, b));
+}
+
+/**
     * @brief Get the appropriate comparator based on options.
 * @return NULL if -f (no sorting).
 */

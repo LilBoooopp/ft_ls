@@ -43,9 +43,13 @@ static int  set_option(char c, t_opts *opts)
     else if (c == 'd')
         opts->d = true;
     else if (c == 'h')
-            opts->h = true;
+        opts->h = true;
     else if (c == 'S')
-            opts->cap_s = true;
+        opts->cap_s = true;
+    else if (c == 'X')
+        opts->cap_x = true;
+    else if (c == 'i')
+        opts->i = true;
     else if (c == 'G')
         opts->color = true;
     else

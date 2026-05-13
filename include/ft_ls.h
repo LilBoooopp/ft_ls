@@ -24,6 +24,8 @@ typedef struct s_opts
     bool    d; //  list directories themselves, not contents
     bool    h;
     bool    cap_s;
+    bool    cap_x;
+    bool    i;
     bool    color; //  colorized output
 }   t_opts;
 
@@ -67,6 +69,7 @@ typedef struct s_col_widths
     int size;
     int major;
     int minor;
+    int inode;
     bool any_acl;
 }   t_col_widths;
 
